@@ -13,15 +13,15 @@ Este proyecto, que es un pipeline desarrollado en GCP, tiene como objetivo imple
 ## Justificación de Servicios Utilizados en el Diagrama
 
 1. **Cloud Storage:**
-Se eligió este servicio como punto de entrada para almacenar las fuentes de datos 'ventas.csv' y 'eventos_navegación.json' debido a su escalabilidad, bajo costo y compatibilidad con múltiples formatos. En este proyecto, Cloud Storage, facilita la integración conarnos con Pub/Sub y Cloud Functions permitiendo automatizar la carga de archivos fuente al bucket
+Se eligió este servicio como punto de entrada para almacenar las fuentes de datos 'ventas.csv' y 'eventos_navegación.json' debido a su escalabilidad, bajo costo y compatibilidad con múltiples formatos. En este proyecto, Cloud Storage, facilita la integración con Pub/Sub y Cloud Functions permitiendo automatizar la carga de archivos fuente al bucket.
 2. **Pub/Sub:**
-Se elegió este servicio porque facilita la integración entre Cloud Storage y las distintas Cloud Functions que se necesiten en el proyecto. Este intermediario nos permite no depender de múltiples buckets para cada fuente de datos, sino por el contrario permite que múltiples cloud functions reaccionen a los mismos eventos de forma independiente y filtrada (por tipo de archivo y por carpeta dentro del bucket). Esto crea una arquitectura resiliente y escalable, donde podemos añadir, quitar o modificar procesadores de datos sin afectar el sistema de ingesta.
+Se eligió este servicio porque facilita la integración entre Cloud Storage y las distintas Cloud Functions que se necesiten en el proyecto. Este intermediario nos permite no depender de múltiples buckets para cada fuente de datos, sino por el contrario permite que múltiples cloud functions reaccionen a los mismos eventos de forma independiente y filtrada (por tipo de archivo y por carpeta dentro del bucket). Esto crea una arquitectura resiliente y escalable, donde podemos añadir, quitar o modificar procesadores de datos sin afectar el sistema de ingesta.
 3. **Cloud Functions:**
 Se eligió este servicio por ser una solución serverless (lo cual nos permite centrarnos en el código y pagando solo por el tiempo de ejecución), basada en eventos y de bajo costo. Facilita la ejecución de tareas de utilidad para este proyecto como:
    - Procesamiento de Eventos: Reaccionar a mensajes de Pub/Sub para procesar archivos.
    - Creación de APIs Simples: Exponer endpoints HTTP para simular fuentes de datos.
 4. **BigQuery:**
-Se eligió este servicio como el core de nuestra capa de almacenamiento y análisis debido a su capacidad para procesar un alto volumen de datos a alta velocidad, su motor SQL estándar y a su arquitectura serverless. Adicionalmennte, sus funcionalidades de particionamiento por fecha y clustering por columnas clave se utilizaron para optimizar drásticamente el rendimiento de las consultas y minimizar los costos de escaneo, demostrando un diseño de almacenamiento eficiente y escalable para el futuro.
+Se eligió este servicio como el core de nuestra capa de almacenamiento y análisis debido a su capacidad para procesar un alto volumen de datos a alta velocidad, su motor SQL estándar y a su arquitectura serverless. Adicionalmente, sus funcionalidades de particionamiento por fecha y clustering por columnas clave se utilizaron para optimizar drásticamente el rendimiento de las consultas y minimizar los costos de escaneo, demostrando un diseño de almacenamiento eficiente y escalable para el futuro.
 5. **IAM:**
 Se implementó este servicio siguiendo el principio de menor privilegio. Para efectos de demostración, se habilitó la invocación pública en funciones HTTP; sin embargo, en un entorno de producción se utilizarían roles específicos, asegurando una comunicación segura y autenticada entre todos los componentes del pipeline.
 6. **Looker Studio:**
@@ -29,10 +29,10 @@ Se eligió este servicio por su conexión nativa y sin costo con BigQuery. Su fu
 
 ## Estrategia de Escalabilidad y Control de Costos en BigQuery
 
-La solución implementada en BigQuery fue diseñada para garantizar la escalabilidad para manejar volúmenes de datos creciencias y mantener un control estricto sobre los costos de consultas SQL. Esto se logra a través de las siguientes consideraciones implementadas:
+La solución implementada en BigQuery fue diseñada para garantizar la escalabilidad para manejar volúmenes de datos crecientes y mantener un control estricto sobre los costos de consultas SQL. Esto se logra a través de las siguientes consideraciones implementadas:
 
 1. **Particionamiento de Tablas por Fecha:**
-Las tablas de (ventas y eventos), que se espera que crezcan continuamente con el tiempo, fueron particionadas por su campo de fecha (fecha_venta y DATE(timestamp) respectivamente). Esta partición permite tener una optimización de costos importante. Al ejecutar consultas que incluyen un filtro de fecha WHERE, BigQuery puede escanear únicamente las particiones relevantes en lugar de la tabla completa. A medida que las tablas crecen, el rendimiento de las consultas sobre períodos de tiempo específicos se mantiene alto, ya que el volumen de datos a escanear no aumenta si el rango de fechas de la consulta es constante.
+Las tablas de (ventas y eventos), que se espera que crezcan continuamente con el tiempo, fueron particionadas por su campo de fecha (fecha_venta y DATE(timestamp) respectivamente). Esta partición permite tener una optimización de costos importante. Al ejecutar consultas que incluyen un filtro de fecha "WHERE", BigQuery puede escanear únicamente las particiones relevantes en lugar de la tabla completa. A medida que las tablas crecen, el rendimiento de las consultas sobre períodos de tiempo específicos se mantiene alto, ya que el volumen de datos a escanear no aumenta si el rango de fechas de la consulta es constante.
 2. **Clustering de Datos:**
 El clustering ordena físicamente los datos dentro de cada partición. Cuando una consulta filtra por una columna clusterizada, BigQuery puede saltar directamente a los bloques de almacenamiento que contienen esos datos, evitando de nuevo un escaneo completo. Esto no solo acelera la consulta (mejor rendimiento), sino que también reduce los bytes procesados, contribuyendo al control de costos. Las tablas fueron clusterizadas por columnas que se usan frecuentemente en filtros, GROUPBY o JOINs.
    - ventas: Clusterizada por id_producto y id_cliente.
@@ -372,4 +372,9 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
   ```
   ![Pregunta4](https://github.com/user-attachments/assets/2b752b10-29bb-40b0-b796-9899a7e0bc36)
 
-  
+  ## Propuesta de mejoras del Pipeline
+
+- **Seguridad Robusta entre Servicios:** Para facilitar la pronta ejecución del assessment, las Cloud Functions HTTP (get-clientes-api y cargar-clientes-a-bigquery) se configuraron para permitir invocaciones no autenticadas (--allow-unauthenticated). Esto representa un riesgo de seguridad significativo en un entorno real. Se propone asegurar la comunicación entre servicios utilizando correctamente las funcionalidades de IAM y gestionar así las credenciales de forma segura.
+- **Concretar la simulación de "Stream de navegación web (eventos simulados desde Pub/Sub):** Debido a que posiblemente si indagabamos más sobre esta funcionalidad el tiempo nos hubiera podido jugar en contra, optamos por implementar esta fuente de datos similar a la fuente de ventas csv desde Cloud Storage, con la diferencia que en este caso el archivo fuente es .JSON. Se propone implementar la simulación a través de Pub/Sub para garantizar el manejo apropiado de distintas fuentes de datos.
+- **Implementación de Pruebas de Calidad de Datos con Procedimientos:** Los pipelines actuales cargan los datos en BigQuery asumiendo que la óptima calidad de los datos de origen. No existe un proceso automatizado para validar que los datos cargados cumplen con las reglas de negocio esperadas. Por ejemplo, ¿qué pasaría si el archivo CSV de ventas llega con precios negativos o sin id_cliente en algunas filas? Estos "datos corruptos" se cargarían silenciosamente en la tabla, corrompiendo los resultados a las consultas SQL ya definidas. Se propone crear y programar procedimientos de validación en BigQuery que funcionen como pruebas de calidad de datos. Estos procedimientos se ejecutarían después de cada carga para verificar la integridad de los datos recién recibidos.
+
