@@ -1,4 +1,0 @@
-gcloud functions add-iam-policy-binding cargar-clientes-a-bigquery \
-  --region=us-central1 \
-  --member=allUsers \
-  --role=roles/cloudfunctions.invoker

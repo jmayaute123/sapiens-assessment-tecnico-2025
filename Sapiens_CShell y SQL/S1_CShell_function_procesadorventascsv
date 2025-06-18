@@ -1,8 +1,0 @@
-gcloud functions deploy procesador-ventas-csv \
-  --runtime=python311 \
-  --project=sapiens-assessment-pipiline \
-  --region=us-central1 \
-  --source=. \
-  --entry-point=carga_csv_desde_pubsub \
-  --trigger-topic=bucket-uploads-topic \
-  --no-gen2

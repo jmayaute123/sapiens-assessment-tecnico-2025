@@ -1,9 +1,0 @@
-gcloud functions deploy cargar-clientes-a-bigquery \
-  --runtime=python311 \
-  --project=sapiens-assessment-pipiline \
-  --region=us-central1 \
-  --source=. \
-  --entry-point=cargar_clientes_a_bigquery \
-  --trigger-http \
-  --no-gen2 \
-  --allow-unauthenticated

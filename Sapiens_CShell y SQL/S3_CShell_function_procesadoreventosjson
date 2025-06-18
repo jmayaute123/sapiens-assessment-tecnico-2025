@@ -1,8 +1,0 @@
-gcloud functions deploy procesador-eventos-json \
-  --runtime=python311 \
-  --project=sapiens-assessment-pipiline \
-  --region=us-central1 \
-  --source=. \
-  --entry-point=procesa_json_eventos \
-  --trigger-topic=bucket-uploads-topic \
-  --no-gen2
