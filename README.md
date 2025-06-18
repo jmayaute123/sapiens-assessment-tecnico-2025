@@ -209,8 +209,6 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
 - Pregunta 2: Clientes inactivos pero con navegación activa. Cabe resaltar que para esta pregunta alteramos uno de los datos del cliente C001 (fecha de navegación) ya que de no ser así el query no arroja coincidencias.
 
   ```sql
-  -- Definimos un límite histórico para no escanear datos demasiado antiguos
-  DECLARE fecha_inicio_historico DATE DEFAULT '2025-01-01';
   
   WITH
   -- Paso 1: Obtener la fecha de la última compra de cada cliente
@@ -221,7 +219,7 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
       FROM
           `sapiens-assessment-pipiline.sapiens_data.ventas`
       WHERE
-          fecha_venta >= fecha_inicio_historico
+          fecha_venta >= DATE '2025-01-01'
       GROUP BY
           id_cliente
   ),
@@ -234,7 +232,7 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
       FROM
           `sapiens-assessment-pipiline.sapiens_data.eventos`
       WHERE
-          DATE(timestamp) >= fecha_inicio_historico
+          DATE(timestamp) >= DATE '2025-01-01'
       GROUP BY
           id_cliente
   )
@@ -258,7 +256,6 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
   ORDER BY
       c.id_cliente;
   ```
-  
   ![Pregunta2](https://github.com/user-attachments/assets/dae440de-0739-451b-b249-fdb8e9e64a7e)
 
 - Pregunta 3: Top 5 productos por margen de ganancia
@@ -309,14 +306,14 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
 
   ![Pregunta3](https://github.com/user-attachments/assets/eb6c847f-869d-4596-819e-93757d9cd166)
 
-- Pregunta 4: Procedimiento almacenado para resumen mensual con partición. Para llamar al procedimiento podemos usar como ejemplo la siguiente sintaxis: "CALL `sapiens-assessment-pipiline.sapiens_data.sp_generar_resumen_mensual`('2025-04-01');"
+- Pregunta 4: Procedimiento almacenado para resumen mensual con partición. Para llamar al procedimiento podemos usar como ejemplo la siguiente sintaxis: "CALL `sapiens-assessment-pipiline.sapiens_data.sp_generar_resumen_mensual`('2025-06-01');"
  
   ```sql
   CREATE OR REPLACE PROCEDURE `sapiens-assessment-pipiline.sapiens_data.sp_generar_resumen_mensual`(mes_a_procesar DATE)
   BEGIN
     -- Este procedimiento calcula las métricas de venta para un mes dado
     -- y crea/reemplaza una tabla de resumen con los resultados.
-    -- El mes de entrada debe ser cualquier día dentro del mes a procesar (ej. '2025-05-01').
+    -- El mes de entrada debe ser cualquier día dentro del mes a procesar (ej. '2025-06-01').
   
     CREATE OR REPLACE TABLE `sapiens-assessment-pipiline.sapiens_data.resumen_mensual`
     PARTITION BY mes
@@ -370,7 +367,23 @@ Para cada paso, verificar los logs de las Cloud Functions y la tabla de destino 
   
   END;
   ```
-  ![Pregunta4](https://github.com/user-attachments/assets/2b752b10-29bb-40b0-b796-9899a7e0bc36)
+  
+  ```sql
+   -- Consulta 4: Visualizar data ordenada por margen total de la tabla resumen mensual
+   SELECT
+     *
+   FROM
+     `sapiens-assessment-pipiline.sapiens_data.resumen_mensual`
+   ORDER BY
+     margen_total DESC;
+   ```
+  ![Pregunta4](https://github.com/user-attachments/assets/d2b06772-b8c4-4015-87ea-60a11e081b4d)
+
+  ## Dashboard en Looker Studio
+
+  Se ha creado el siguiente dashboard en Looker Studio que busca presentar la data de cada consulta de una manera amigable y con utilidad para los casos de negocio que se puedan definir. Cada consulta hecha tiene un gráfico asociado diferenciado por su título. 
+
+   ![Looker](https://github.com/user-attachments/assets/ae4a75ec-c995-4f41-bfb2-29c3b508dd05)
 
   ## Propuesta de mejoras del Pipeline
 
