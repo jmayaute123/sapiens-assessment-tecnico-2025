@@ -1,0 +1,10 @@
+gcloud functions deploy get-clientes-api \
+  --runtime=python311 \
+  --project=sapiens-assessment-pipiline \
+  --region=us-central1 \
+  --source=. \
+  --entry-point=get_clientes_api \
+  --trigger-http \
+  --no-gen2 \
+  --allow-unauthenticated 
+#https://us-central1-sapiens-assessment-pipiline.cloudfunctions.net/cargar-clientes-a-bigquery

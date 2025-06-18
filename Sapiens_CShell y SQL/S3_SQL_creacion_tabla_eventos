@@ -1,0 +1,11 @@
+CREATE OR REPLACE TABLE `sapiens-assessment-pipiline.sapiens_data.eventos`
+(
+  evento_id STRING,
+  timestamp TIMESTAMP,
+  id_cliente STRING,
+  pagina STRING,
+  accion STRING,
+  dispositivo STRING
+)
+PARTITION BY DATE(timestamp)
+CLUSTER BY id_cliente;

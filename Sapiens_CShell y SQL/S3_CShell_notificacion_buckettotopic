@@ -1,0 +1,5 @@
+gcloud storage buckets notifications create gs://sapiens-pipiline-bucket \
+  --topic=bucket-uploads-topic \
+  --event-types=OBJECT_FINALIZE \
+  --object-prefix=eventos/ \
+  --custom-attributes="file_type=json_eventos"

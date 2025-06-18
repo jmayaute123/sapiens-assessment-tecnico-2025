@@ -1,0 +1,82 @@
+[
+    {
+        "id_cliente": "C001",
+        "nombre": "Cliente 1",
+        "email": "cliente1@correo.com",
+        "fecha_registro": "2024-01-07",
+        "segmento": "B\u00e1sico",
+        "pais": "Chile"
+    },
+    {
+        "id_cliente": "C002",
+        "nombre": "Cliente 2",
+        "email": "cliente2@correo.com",
+        "fecha_registro": "2024-03-12",
+        "segmento": "Premium",
+        "pais": "Chile"
+    },
+    {
+        "id_cliente": "C003",
+        "nombre": "Cliente 3",
+        "email": "cliente3@correo.com",
+        "fecha_registro": "2024-03-04",
+        "segmento": "Premium",
+        "pais": "Colombia"
+    },
+    {
+        "id_cliente": "C004",
+        "nombre": "Cliente 4",
+        "email": "cliente4@correo.com",
+        "fecha_registro": "2024-04-13",
+        "segmento": "Est\u00e1ndar",
+        "pais": "Per\u00fa"
+    },
+    {
+        "id_cliente": "C005",
+        "nombre": "Cliente 5",
+        "email": "cliente5@correo.com",
+        "fecha_registro": "2024-06-17",
+        "segmento": "Premium",
+        "pais": "Colombia"
+    },
+    {
+        "id_cliente": "C006",
+        "nombre": "Cliente 6",
+        "email": "cliente6@correo.com",
+        "fecha_registro": "2024-04-08",
+        "segmento": "Premium",
+        "pais": "Per\u00fa"
+    },
+    {
+        "id_cliente": "C007",
+        "nombre": "Cliente 7",
+        "email": "cliente7@correo.com",
+        "fecha_registro": "2024-01-06",
+        "segmento": "B\u00e1sico",
+        "pais": "Per\u00fa"
+    },
+    {
+        "id_cliente": "C008",
+        "nombre": "Cliente 8",
+        "email": "cliente8@correo.com",
+        "fecha_registro": "2024-01-01",
+        "segmento": "Est\u00e1ndar",
+        "pais": "Colombia"
+    },
+    {
+        "id_cliente": "C009",
+        "nombre": "Cliente 9",
+        "email": "cliente9@correo.com",
+        "fecha_registro": "2024-01-28",
+        "segmento": "B\u00e1sico",
+        "pais": "Colombia"
+    },
+    {
+        "id_cliente": "C010",
+        "nombre": "Cliente 10",
+        "email": "cliente10@correo.com",
+        "fecha_registro": "2024-01-14",
+        "segmento": "Est\u00e1ndar",
+        "pais": "Colombia"
+    }
+]

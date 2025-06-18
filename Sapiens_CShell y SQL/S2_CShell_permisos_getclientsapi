@@ -1,0 +1,4 @@
+gcloud functions add-iam-policy-binding get-clientes-api \
+  --region=us-central1 \
+  --member=allUsers \
+  --role=roles/cloudfunctions.invoker
